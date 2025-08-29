@@ -423,7 +423,7 @@ import {Router, RouterModule} from '@angular/router';
 
     .menu-wrap {
       position: relative;
-      margin-left: .25rem;
+      margin-left: .4rem;
     }
 
     .menu-btn {
@@ -441,9 +441,9 @@ import {Router, RouterModule} from '@angular/router';
     .menu-btn span {
       display: block;
       width: 18px;
-      height: 2px;
-      background: var(--ink);
-      margin: 2px 0;
+      height: 4px;
+      background: var(--ring);
+      margin: 2px 2px;
       border-radius: 2px;
     }
 
