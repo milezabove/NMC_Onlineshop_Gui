@@ -10,8 +10,11 @@ import {Router} from '@angular/router';
   imports: [CommonModule, FormsModule],
   template: `
     <section class="wrap">
+      <div class="bg"></div>
+
       <div class="card">
-        <h1 class="title">Willkommen auf dem Marktplatz!</h1>
+        <h1 class="title">Willkommen auf dem Marktplatz</h1>
+
         <div class="tabs">
           <button type="button"
                   [class.active]="mode()==='login'"
@@ -22,6 +25,7 @@ import {Router} from '@angular/router';
                   (click)="setMode('register')">Registrieren
           </button>
         </div>
+
         <section *ngIf="mode()==='login'" class="pane">
           <label class="lbl">E-Mail
             <input class="inp" type="email" [(ngModel)]="logEmail"/>
@@ -35,12 +39,8 @@ import {Router} from '@angular/router';
 
           <p class="ok" *ngIf="okLogin()">{{ okLogin() }}</p>
           <p class="err" *ngIf="errLogin()">{{ errLogin() }}</p>
-
-          <p class="alt">
-            Noch kein Konto?
-            <a class="switch" (click)="toggle()">Jetzt registrieren</a>
-          </p>
         </section>
+
         <section *ngIf="mode()==='register'" class="pane">
           <label class="lbl">E-Mail
             <input class="inp" type="email" [(ngModel)]="regEmail"/>
@@ -49,37 +49,56 @@ import {Router} from '@angular/router';
           <label class="lbl">Passwort
             <input class="inp" type="password" [(ngModel)]="regPwd"/>
           </label>
+
           <button class="primary" (click)="register()" [disabled]="busy()">Konto erstellen</button>
+
           <p class="ok" *ngIf="ok()">{{ ok() }}</p>
           <p class="err" *ngIf="err()">{{ err() }}</p>
-
-          <p class="alt">
-            Schon ein Konto?
-            <a class="switch" (click)="toggle()">Zum Login</a>
-          </p>
         </section>
       </div>
     </section>
   `,
   styles: [`
     .wrap {
+      position: relative;
       min-height: 100dvh;
       display: grid;
       place-items: center;
       padding: 2rem 1rem;
       color: var(--ink);
-      background: radial-gradient(1100px 520px at 8% -10%, #fff4f8 0%, transparent 60%),
-      radial-gradient(900px 520px at 110% 120%, #eef7ef 0%, transparent 60%),
-      var(--bg);
+      background: var(--bg);
+      overflow: hidden;
+    }
+
+    .bg {
+      position: absolute;
+      inset: -20px;
+      background: url('/assets/images/background.jpg') center/cover no-repeat;
+      filter: blur(5px) saturate(1.05) brightness(0.98);
+      transform: scale(1.08);
+      will-change: transform, filter;
+      z-index: 0;
+    }
+
+    .bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(60% 60% at 20% 0%, rgba(255, 244, 248, .55) 0%, rgba(255, 244, 248, 0) 60%),
+      radial-gradient(65% 70% at 100% 100%, rgba(233, 246, 233, .50) 0%, rgba(233, 246, 233, 0) 60%);
+      pointer-events: none;
     }
 
     .card {
-      width: min(600px, 100%);
+      position: relative;
+      z-index: 1;
+      width: min(580px, 100%);
       background: var(--card);
       border: 1px solid var(--accent);
       border-radius: 16px;
       box-shadow: var(--shadow);
       padding: 1.2rem 1.1rem 1.1rem;
+      backdrop-filter: saturate(1.05);
     }
 
     .title {
@@ -100,6 +119,7 @@ import {Router} from '@angular/router';
       background: #fff;
       border: 1px solid var(--accent);
       border-radius: 999px;
+      box-shadow: var(--shadow);
     }
 
     .tabs button {
@@ -174,21 +194,6 @@ import {Router} from '@angular/router';
       box-shadow: none;
     }
 
-    .alt {
-      text-align: center;
-      margin: .25rem 0 0;
-      color: var(--muted);
-      font-size: .95rem;
-    }
-
-    .switch {
-      color: var(--ink);
-      text-decoration: underline;
-      cursor: pointer;
-      font-weight: 600;
-      margin-left: .25rem;
-    }
-
     .ok {
       margin: .25rem 0 0;
       color: #166534;
@@ -209,6 +214,16 @@ import {Router} from '@angular/router';
       border-radius: 10px;
       text-align: center;
       font-weight: 600;
+    }
+
+    @media (max-width: 420px) {
+      .tabs {
+        box-shadow: none;
+      }
+
+      .card {
+        border-radius: 14px;
+      }
     }
   `]
 })
@@ -232,10 +247,6 @@ export class AuthPageComponent {
   setMode(m: 'login' | 'register') {
     this.mode.set(m);
     this.clearMsgs();
-  }
-
-  toggle() {
-    this.setMode(this.mode() === 'login' ? 'register' : 'login');
   }
 
   clearMsgs() {
