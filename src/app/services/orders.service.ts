@@ -1,6 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../environments/environment';
+import {Order} from '../models/order';
 
 export interface PurchaseItem { articleId: number; quantity: number; }
 export interface PurchaseResponse {
@@ -14,6 +15,10 @@ export class OrdersService {
 
   purchase(items: { articleId: number; quantity: number; }[]) {
     return this.http.post<PurchaseResponse>(`${this.base}/purchase`, items);
+  }
+
+  getOrders() {
+    return this.http.get<Order[]>(`${this.base}`)
   }
 
 }

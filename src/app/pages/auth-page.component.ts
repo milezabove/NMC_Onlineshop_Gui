@@ -42,6 +42,15 @@ import {Router} from '@angular/router';
         </section>
 
         <section *ngIf="mode()==='register'" class="pane">
+          <label class="lbl">Voller Name
+            <input class="inp" type="text" [(ngModel)]="regName"/>
+          </label>
+
+          <label class="lbl">Adresse
+            <textarea class="inp ta" rows="3" [(ngModel)]="regAddress"
+                      placeholder="Strasse, Hausnummer, PLZ, Ort"></textarea>
+          </label>
+
           <label class="lbl">E-Mail
             <input class="inp" type="email" [(ngModel)]="regEmail"/>
           </label>
@@ -237,6 +246,8 @@ export class AuthPageComponent {
   regPwd = '';
   logEmail = '';
   logPwd = '';
+  regName = '';
+  regAddress = '';
 
   busy = signal(false);
   ok = signal('');
@@ -274,7 +285,7 @@ export class AuthPageComponent {
   register() {
     this.busy.set(true);
     this.clearMsgs();
-    this.auth.register(this.regEmail, this.regPwd).subscribe({
+    this.auth.register(this.regEmail, this.regPwd, this.regName, this.regAddress).subscribe({
       next: () => {
         this.busy.set(false);
         this.router.navigateByUrl('/shop');

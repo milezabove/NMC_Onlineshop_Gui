@@ -4,21 +4,39 @@ import {ArticleService} from '../services/article.service';
 import {BasketService} from '../services/basket.service';
 import {OrdersService, PurchaseResponse} from '../services/orders.service';
 import {Article} from '../models/article';
-import {Router} from '@angular/router';
+import {Router, RouterModule} from '@angular/router';
 
 @Component({
   standalone: true,
-  selector: 'app-shop-page',
-  imports: [CommonModule],
+  selector: 'app-market-page',
+  imports: [CommonModule, RouterModule],
   template: `
     <header class="topbar">
       <h1 class="brand">Marktplatz</h1>
+
       <div class="spacer"></div>
-      <button class="basket-btn" (click)="showBasket.set(true)">
+
+      <button class="basket-btn" (click)="showBasket.set(true)" aria-label="Warenkorb öffnen">
         <img src="assets/images/korb.png" alt="Warenkorb">
         <span *ngIf="basket.totalQty() > 0" class="basket-badge">{{ basket.totalQty() }}</span>
       </button>
-      <a class="link" (click)="logout()">Logout</a>
+
+      <div class="menu-wrap">
+        <button
+          class="menu-btn"
+          (click)="toggleMenu()"
+          [attr.aria-expanded]="menuOpen()"
+          aria-haspopup="menu"
+          aria-label="Menü öffnen">
+          <span></span><span></span><span></span>
+        </button>
+
+
+        <div class="menu" *ngIf="menuOpen()" role="menu">
+          <a role="menuitem" (click)="goToOrders()">Meine Bestellungen</a>
+          <button role="menuitem" (click)="logout()">Logout</button>
+        </div>
+      </div>
     </header>
     <main class="content">
       <section class="grid">
@@ -101,15 +119,6 @@ import {Router} from '@angular/router';
 
     .spacer {
       flex: 1
-    }
-
-    .link {
-      cursor: pointer;
-      text-decoration: underline;
-      background: none;
-      border: none;
-      padding: 0;
-      color: var(--muted)
     }
 
     .basket-btn {
@@ -258,7 +267,6 @@ import {Router} from '@angular/router';
       cursor: pointer;
     }
 
-    /* Drawer */
     .drawer {
       position: fixed;
       top: 0;
@@ -412,6 +420,65 @@ import {Router} from '@angular/router';
       z-index: 50;
       box-shadow: var(--shadow);
     }
+
+    .menu-wrap {
+      position: relative;
+      margin-left: .25rem;
+    }
+
+    .menu-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      border: 1px solid var(--accent);
+      background: #fff;
+      box-shadow: var(--shadow);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .menu-btn span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: var(--ink);
+      margin: 2px 0;
+      border-radius: 2px;
+    }
+
+    .menu {
+      position: absolute;
+      right: 0;
+      top: 48px;
+      min-width: 220px;
+      z-index: 60;
+      background: #fff;
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: .35rem;
+      display: flex;
+      flex-direction: column;
+      gap: .25rem;
+    }
+
+    .menu a, .menu button {
+      text-align: left;
+      width: 100%;
+      padding: .55rem .6rem;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--ink);
+      text-decoration: none;
+      font: inherit;
+    }
+
+    .menu a:hover, .menu button:hover {
+      background: #fff7fb
+    }
   `]
 })
 export class MarketComponent implements OnInit {
@@ -423,11 +490,22 @@ export class MarketComponent implements OnInit {
   articles = signal<Article[]>([]);
   showBasket = signal(false);
   busy = signal(false);
+  menuOpen = signal(false);
   confirm = signal<PurchaseResponse | null>(null);
 
   ngOnInit() {
     this.api.listAll().subscribe(list => this.articles.set(list));
   }
+
+  toggleMenu() {
+    this.menuOpen.set(!this.menuOpen());
+  }
+
+  goToOrders() {
+    this.menuOpen.set(false);
+    this.router.navigateByUrl('/orders');
+  }
+
 
   purchase() {
     if (this.basket.totalQty() === 0 || this.busy()) return;
@@ -450,6 +528,7 @@ export class MarketComponent implements OnInit {
   }
 
   logout() {
+    this.menuOpen.set(false)
     localStorage.removeItem('jwt');
     this.router.navigateByUrl('/');
   }
