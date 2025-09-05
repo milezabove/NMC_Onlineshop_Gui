@@ -20,8 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          persist-credentials: false
-          submodules: false
+          submodules: true
           lfs: false
       - name: Install OIDC Client from Core Package
         run: npm install @actions/core@1.6.0 @actions/http-client
