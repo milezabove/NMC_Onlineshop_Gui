@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiBaseUrl: 'https://onlineshop-api.blueforest-04e4eac7.westus.azurecontainerapps.io/api'
+  apiBaseUrl: 'onlineshop-api-d8cpfzcmg0e0gxg4.eastus-01.azurewebsites.net/api'
 };
